@@ -30,6 +30,12 @@ func (fw *flushWriter) Write(p []byte) (n int, err error) {
 }
 
 func handler(w http.ResponseWriter, req *http.Request) {
+	defer func() {
+		if r := recover(); r != nil {
+			println("recovered in handler", r)
+		}
+	}()
+
 	fw := flushWriter{w: w}
 	if f, ok := w.(http.Flusher); ok {
 		fw.f = f
@@ -56,6 +62,7 @@ func handler(w http.ResponseWriter, req *http.Request) {
 		return
 	case <-done:
 		println("command exited")
+		fw.f.Flush()
 	}
 
 	if cmd.ProcessState.ExitCode() != 0 {
