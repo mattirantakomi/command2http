@@ -36,6 +36,8 @@ func handler(w http.ResponseWriter, req *http.Request) {
 		}
 	}()
 
+        w.Header().Set("Content-Type", "text/event-stream")
+
 	fw := flushWriter{w: w}
 	if f, ok := w.(http.Flusher); ok {
 		fw.f = f
